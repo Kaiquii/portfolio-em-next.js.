@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Como Rodar Este Projeto (Guia para Iniciantes)
 
-## Getting Started
+Este guia foi feito para ajudar você a visualizar este projeto no seu computador, mesmo que não tenha experiência técnica prévia. Siga os passos abaixo com calma.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Passo 1: Instalar as Ferramentas Necessárias
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Antes de começar, seu computador precisa de um programa chamado **Node.js**. Ele é o "motor" que faz o projeto funcionar.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Acesse o site oficial: [nodejs.org](https://nodejs.org).
+2. Baixe a versão recomendada (geralmente marcada como **LTS** - Long Term Support).
+3. Instale como qualquer outro programa (clicando em "Next" ou "Próximo" até terminar).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+> **Como saber se funcionou?**
+> Abra o terminal do seu computador (No Windows chame de "Prompt de Comando" ou "PowerShell"; no Mac/Linux chame de "Terminal") e digite:
+> `node -v`
+> Se aparecerem números (ex: `v18.17.0`), está tudo pronto!
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Passo 2: Baixar o Projeto
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Se você recebeu este projeto como um arquivo compactado (.zip):
+1. Descompacte (extraia) a pasta em um local de fácil acesso, como sua **Área de Trabalho**.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Se você vai baixar via código (Git) e não sabe como, recomendo usar a opção de **Download ZIP** no botão verde "Code" aqui na página do repositório.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Passo 3: Preparar o Ambiente
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Agora vamos instalar as "peças" que compõem o projeto (chamadas de dependências).
+
+1. Abra o **Terminal** ou **Prompt de Comando**.
+2. Você precisa "entrar" na pasta do projeto pelo terminal.
+   * Digite `cd` e dê um espaço.
+   * Arraste a pasta do projeto para dentro da janela do terminal. O caminho será preenchido automaticamente.
+   * Aperte **Enter**.
+3. Agora que o terminal está apontando para a pasta correta, digite o seguinte comando e aperte **Enter**:
+
+   ```bash
+   npm install
+4. Como Rodar o Projeto (Atenção aqui!)
+  * Agora vamos ligar o servidor. No mesmo terminal, digite exatamente este comando e aperte Enter:
+  ```bash
+  npm run dev
