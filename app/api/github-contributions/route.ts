@@ -38,13 +38,29 @@ const graphqlQuery = `
   query ContributionCalendar(
     $login: String!
     $from: DateTime
+    $countFrom: DateTime
     $to: DateTime
   ) {
     user(login: $login) {
       allContributions: contributionsCollection {
         contributionYears
       }
-      selectedContributions: contributionsCollection(from: $from, to: $to) {
+      displayContributions: contributionsCollection(from: $from, to: $to) {
+        contributionCalendar {
+          weeks {
+            firstDay
+            contributionDays {
+              date
+              contributionCount
+              contributionLevel
+            }
+          }
+        }
+      }
+      selectedContributions: contributionsCollection(
+        from: $countFrom
+        to: $to
+      ) {
         contributionCalendar {
           totalContributions
           weeks {
@@ -61,13 +77,60 @@ const graphqlQuery = `
   }
 `;
 
-const getDateRange = (selectedYear: number, isRollingPeriod: boolean) =>
-  isRollingPeriod
-    ? { from: null, to: null }
-    : {
-        from: `${selectedYear}-01-01T00:00:00Z`,
-        to: `${selectedYear}-12-31T23:59:59Z`,
-      };
+const getDateRange = (selectedYear: number, isRollingPeriod: boolean) => {
+  if (!isRollingPeriod) {
+    return {
+      countFrom: `${selectedYear}-01-01`,
+      from: `${selectedYear}-01-01T00:00:00Z`,
+      to: `${selectedYear}-12-31T23:59:59Z`,
+    };
+  }
+
+  const today = new Date();
+  const countFrom = new Date(
+    Date.UTC(
+      today.getUTCFullYear() - 1,
+      today.getUTCMonth(),
+      today.getUTCDate(),
+    ),
+  );
+  const from = new Date(countFrom);
+  from.setUTCDate(from.getUTCDate() - from.getUTCDay());
+  const to = new Date(
+    Date.UTC(
+      today.getUTCFullYear(),
+      today.getUTCMonth(),
+      today.getUTCDate(),
+      23,
+      59,
+      59,
+    ),
+  );
+
+  return {
+    countFrom: countFrom.toISOString().slice(0, 10),
+    from: from.toISOString(),
+    to: to.toISOString(),
+  };
+};
+
+const calculateTotalContributions = (
+  weeks: ContributionWeek[],
+  from: string,
+  to: string,
+  fallback: number | null,
+) => {
+  const days = weeks
+    .flatMap((week) => week.contributionDays)
+    .filter((day) => day.date >= from && day.date <= to);
+
+  if (days.some((day) => day.contributionCount === null)) return fallback;
+
+  return days.reduce(
+    (total, day) => total + (day.contributionCount ?? 0),
+    0,
+  );
+};
 
 const normalizeYears = (years: number[]) => {
   const currentYear = new Date().getFullYear();
@@ -88,13 +151,16 @@ async function requestFromGraphql(
   isRollingPeriod: boolean,
   config: GithubConfig,
 ): Promise<ContributionCalendar> {
+  const range = getDateRange(selectedYear, isRollingPeriod);
   const response = await axios.post(
     `${config.apiUrl}/graphql`,
     {
       query: graphqlQuery,
       variables: {
         login: config.username,
-        ...getDateRange(selectedYear, isRollingPeriod),
+        countFrom: `${range.countFrom}T00:00:00Z`,
+        from: range.from,
+        to: range.to,
       },
     },
     {
@@ -110,37 +176,74 @@ async function requestFromGraphql(
 
   const payload = response.data;
   const user = payload?.data?.user;
-  const calendar = user?.selectedContributions?.contributionCalendar;
+  const displayCalendar =
+    user?.displayContributions?.contributionCalendar;
+  const selectedCalendar =
+    user?.selectedContributions?.contributionCalendar;
 
-  if (!calendar?.weeks) {
+  if (!displayCalendar?.weeks || !selectedCalendar?.weeks) {
     throw new Error("Calendário de contribuições não encontrado");
   }
 
   const years = normalizeYears(
     user?.allContributions?.contributionYears ?? [],
   );
-
-  return {
-    selectedYear,
-    totalContributions: calendar.totalContributions,
-    years,
-    weeks: calendar.weeks.map(
+  const selectedDays = new Map<
+    string,
+    {
+      date: string;
+      contributionCount: number;
+      contributionLevel: string;
+    }
+  >(
+    selectedCalendar.weeks.flatMap(
       (week: {
-        firstDay: string;
         contributionDays: Array<{
           date: string;
           contributionCount: number;
           contributionLevel: string;
         }>;
-      }) => ({
-        firstDay: week.firstDay,
-        contributionDays: week.contributionDays.map((day) => ({
-          date: day.date,
-          contributionCount: day.contributionCount,
-          level: contributionLevel[day.contributionLevel] ?? 0,
-        })),
-      }),
+      }) =>
+        week.contributionDays.map(
+          (day: {
+            date: string;
+            contributionCount: number;
+            contributionLevel: string;
+          }) => [day.date, day] as const,
+        ),
     ),
+  );
+  const weeks = displayCalendar.weeks.map(
+    (week: {
+      firstDay: string;
+      contributionDays: Array<{
+        date: string;
+        contributionCount: number;
+        contributionLevel: string;
+      }>;
+    }) => ({
+      firstDay: week.firstDay,
+      contributionDays: week.contributionDays.map((day) => {
+        const selectedDay = selectedDays.get(day.date);
+        const contributionCount =
+          selectedDay?.contributionCount ?? day.contributionCount;
+        const contributionLevelName =
+          selectedDay?.contributionLevel ?? day.contributionLevel;
+
+        return {
+          date: day.date,
+          contributionCount,
+          level: contributionLevel[contributionLevelName] ?? 0,
+        };
+      }),
+    }),
+  );
+
+  return {
+    selectedYear,
+    totalContributions: selectedCalendar.totalContributions,
+    years,
+    weeks,
   };
 }
 
@@ -201,9 +304,8 @@ async function requestPublicCalendar(
   isRollingPeriod: boolean,
   config: GithubConfig,
 ): Promise<ContributionCalendar> {
-  const query = isRollingPeriod
-    ? ""
-    : `?from=${selectedYear}-01-01&to=${selectedYear}-12-31`;
+  const range = getDateRange(selectedYear, isRollingPeriod);
+  const query = `?from=${range.countFrom}&to=${range.to.slice(0, 10)}`;
   const response = await axios.get<string>(
     `${config.webUrl}/users/${config.username}/contributions${query}`,
     {
@@ -260,23 +362,32 @@ async function requestPublicCalendar(
   }
 
   const totalMatch = html.match(/([\d,.]+)\s+contributions?/i);
+  const normalizedWeeks = Array.from(weeks.entries())
+    .sort(([firstDayA], [firstDayB]) =>
+      firstDayA.localeCompare(firstDayB),
+    )
+    .map(([firstDay, contributionDays]) => ({
+      firstDay,
+      contributionDays: Array.from(contributionDays.values()).sort((a, b) =>
+        a.date.localeCompare(b.date),
+      ),
+    }));
+  const fallbackTotal = totalMatch
+    ? Number(totalMatch[1].replace(/[,\.]/g, ""))
+    : null;
 
   return {
     selectedYear,
-    totalContributions: totalMatch
-      ? Number(totalMatch[1].replace(/[,\.]/g, ""))
-      : null,
+    totalContributions: isRollingPeriod
+      ? calculateTotalContributions(
+          normalizedWeeks,
+          range.countFrom,
+          range.to.slice(0, 10),
+          fallbackTotal,
+        )
+      : fallbackTotal,
     years: getFallbackYears(html),
-    weeks: Array.from(weeks.entries())
-      .sort(([firstDayA], [firstDayB]) =>
-        firstDayA.localeCompare(firstDayB),
-      )
-      .map(([firstDay, contributionDays]) => ({
-        firstDay,
-        contributionDays: Array.from(contributionDays.values()).sort((a, b) =>
-          a.date.localeCompare(b.date),
-        ),
-      })),
+    weeks: normalizedWeeks,
   };
 }
 
