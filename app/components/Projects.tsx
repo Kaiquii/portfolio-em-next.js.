@@ -13,18 +13,29 @@ import "swiper/css/navigation";
 
 const projects = [
   {
-    id: 1,
+    id: 2,
     title: "App Financeiro Web",
     img: "/img/app-financeiro-web.webp",
     desc: "Plataforma financeira web com autenticação, dashboards e API REST em Go para controle completo de receitas, despesas e metas.",
     tags: ["Next.js", "TypeScript", "Go", "API REST"],
     category: "Projeto principal",
-    featured: true,
     repo: "https://github.com/Kaiquii/Sobra-Ai-Web.git",
     live: "https://sobra-ai.netlify.app/login",
   },
   {
-    id: 2,
+    id: 1,
+    title: "SobraAí — App Android",
+    img: "/img/sobra-ai-android.png",
+    desc: "Aplicativo nativo de gestão financeira para acompanhar despesas, rendas, saldo mensal e relatórios, com integração segura a uma API REST.",
+    tags: ["Kotlin", "Jetpack Compose", "Retrofit", "API REST"],
+    category: "App Android",
+    featured: true,
+    repo: "https://github.com/Kaiquii/Sobra-Ai-Android.git",
+    live: "https://play.google.com/store/apps/details?id=br.com.sobraai.app&hl=pt_BR",
+    liveLabel: "Play Store",
+  },
+  {
+    id: 3,
     title: "Site Motoboy - Chama o Boy",
     img: "/img/site-motoboy.webp",
     desc: "Landing page responsiva para corridas e entregas, com formulário direto para WhatsApp e foco em conversão rápida.",
@@ -34,7 +45,7 @@ const projects = [
     live: "https://chama-o-boy.vercel.app",
   },
   {
-    id: 3,
+    id: 4,
     title: "Consulta Fipe",
     img: "/img/projeto-fipe.webp",
     desc: "Aplicação moderna para consultar a Tabela Fipe de carros, motos e caminhões usando dados de API externa.",
@@ -44,7 +55,7 @@ const projects = [
     live: "https://consulta-fipe.vercel.app",
   },
   {
-    id: 4,
+    id: 5,
     title: "Calculadora de IMC",
     img: "/img/projeto-imc.webp",
     desc: "Calculadora de IMC com interface simples, responsiva e feedback visual para acompanhar indicadores de saúde.",
@@ -54,7 +65,7 @@ const projects = [
     live: "https://imc-next.vercel.app",
   },
   {
-    id: 5,
+    id: 6,
     title: "Pet Shop - DEV",
     img: "/img/petdev.webp",
     desc: "E-commerce completo para petshop com sistema de carrinho e checkout.",
@@ -64,7 +75,7 @@ const projects = [
     live: "https://petdev-ten.vercel.app",
   },
   {
-    id: 6,
+    id: 7,
     title: "Starbucks Clone",
     img: "/img/starbucks-foto.webp",
     desc: "Landing page responsiva inspirada na experiência visual da Starbucks, com foco em layout, cores e apresentação de produto.",
@@ -74,7 +85,7 @@ const projects = [
     live: "https://cheery-strudel-5e916f.netlify.app",
   },
   {
-    id: 7,
+    id: 8,
     title: "Agência Awax",
     img: "/img/awaw.webp",
     desc: "Template de agência criativa com seções institucionais, layout responsivo e composição visual moderna.",
@@ -84,7 +95,7 @@ const projects = [
     live: "https://projetoo-awax.netlify.app/",
   },
   {
-    id: 8,
+    id: 9,
     title: "Loja de Roupas",
     img: "/img/loja-roupas.webp",
     desc: "E-commerce de moda com catálogo de produtos, filtros dinâmicos e experiência pensada para navegação rápida.",
@@ -94,7 +105,7 @@ const projects = [
     live: "https://loja-roupas-proj.netlify.app/",
   },
   {
-    id: 9,
+    id: 10,
     title: "Medicenter",
     img: "/img/medicenter.webp",
     desc: "Website institucional para clínica médica, com estrutura clara para serviços, informações e agendamentos.",
@@ -104,7 +115,7 @@ const projects = [
     live: "https://templete-medicenter-b7web.netlify.app/",
   },
   {
-    id: 10,
+    id: 11,
     title: "Pizzaria Delivery",
     img: "/img/pizzaria-proj.webp",
     desc: "Site de delivery para pizzaria com cardápio interativo, carrinho e fluxo pensado para pedidos online.",
@@ -114,7 +125,7 @@ const projects = [
     live: "https://proj-pizzaria-b7web.netlify.app/",
   },
   {
-    id: 11,
+    id: 12,
     title: "Cadastro de Produtos",
     img: "/img/proj-cadastro.webp",
     desc: "Sistema CRUD para gestão de produtos e estoque, com cadastro, listagem e validação de dados no front-end.",
@@ -199,7 +210,7 @@ export default function Projects() {
             }
             className="pb-12"
           >
-            {projects.map((project) => (
+            {[...projects].sort((a, b) => a.id - b.id).map((project) => (
               <SwiperSlide key={project.id} className="h-auto">
                 <div
                   className={`bg-white/90 dark:bg-[#111216]/95 border rounded-lg overflow-hidden hover:border-pink/35 dark:hover:border-pink/25 shadow-md shadow-black/5 dark:shadow-none hover:shadow-lg dark:hover:shadow-[0_0_12px_rgba(209,47,122,0.12)] group h-full flex flex-col backdrop-blur ${
@@ -276,7 +287,7 @@ export default function Projects() {
                         rel="noopener noreferrer"
                         className="flex-1 py-3 rounded-lg bg-linear-to-r from-pink to-blue text-center text-sm font-bold text-white hover:shadow-md hover:shadow-pink-500/15 flex items-center justify-center gap-2"
                       >
-                        <ExternalLink size={14} /> Ver Site
+                        <ExternalLink size={14} /> {project.liveLabel ?? "Ver Site"}
                       </Link>
                     </div>
                   </div>
