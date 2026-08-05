@@ -7,24 +7,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, ExternalLink, Sparkles } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
+import { OverflowItemsTooltip, TruncatedTextTooltip } from "./ui/Tooltip";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 
 const projects = [
   {
-    id: 2,
-    title: "App Financeiro Web",
-    img: "/img/app-financeiro-web.webp",
-    desc: "Plataforma financeira web com autenticação, dashboards e API REST em Go para controle completo de receitas, despesas e metas.",
-    tags: ["Next.js", "TypeScript", "Go", "API REST"],
-    category: "Projeto principal",
-    repo: "https://github.com/Kaiquii/Sobra-Ai-Web.git",
-    live: "https://sobra-ai.netlify.app/login",
-  },
-  {
     id: 1,
-    title: "SobraAí — App Android",
+    title: "SobraAi — Android",
     img: "/img/sobra-ai-android.png",
     desc: "Aplicativo nativo de gestão financeira para acompanhar despesas, rendas, saldo mensal e relatórios, com integração segura a uma API REST.",
     tags: ["Kotlin", "Jetpack Compose", "Retrofit", "API REST"],
@@ -33,6 +24,16 @@ const projects = [
     repo: "https://github.com/Kaiquii/Sobra-Ai-Android.git",
     live: "https://play.google.com/store/apps/details?id=br.com.sobraai.app&hl=pt_BR",
     liveLabel: "Play Store",
+  },
+  {
+    id: 2,
+    title: "SobraAi - Web",
+    img: "/img/app-financeiro-web.webp",
+    desc: "Plataforma financeira web com autenticação, dashboards e API REST em Go para controle completo de receitas, despesas e metas.",
+    tags: ["Next.js", "TypeScript", "Go", "API REST"],
+    category: "Projeto principal",
+    repo: "https://github.com/Kaiquii/Sobra-Ai-Web.git",
+    live: "https://sobra-ai.netlify.app/login",
   },
   {
     id: 3,
@@ -213,7 +214,7 @@ export default function Projects() {
             {[...projects].sort((a, b) => a.id - b.id).map((project) => (
               <SwiperSlide key={project.id} className="h-auto">
                 <div
-                  className={`bg-white/90 dark:bg-[#111216]/95 border rounded-lg overflow-hidden hover:border-pink/35 dark:hover:border-pink/25 shadow-md shadow-black/5 dark:shadow-none hover:shadow-lg dark:hover:shadow-[0_0_12px_rgba(209,47,122,0.12)] group h-full flex flex-col backdrop-blur ${
+                  className={`bg-white/90 dark:bg-[#111216]/95 border rounded-lg overflow-hidden hover:border-pink/35 dark:hover:border-pink/25 shadow-md shadow-black/5 dark:shadow-none hover:shadow-lg dark:hover:shadow-[0_0_12px_rgba(209,47,122,0.12)] group h-120 flex flex-col backdrop-blur ${
                     project.featured
                       ? "border-pink-500/45 dark:border-pink-500/35"
                       : "border-black/10 dark:border-white/10"
@@ -252,27 +253,36 @@ export default function Projects() {
                     </div>
                   </div>
 
-                  <div className="p-6 flex flex-col grow">
-                    <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white line-clamp-1">
+                  <div className="p-6">
+                    <h3 className="mb-3 h-7 text-xl font-bold text-gray-900 dark:text-white line-clamp-1">
                       {project.title}
                     </h3>
 
-                    <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 grow line-clamp-3 leading-relaxed">
-                      {project.desc}
-                    </p>
+                    <TruncatedTextTooltip
+                      content={project.desc}
+                      className="relative mb-4 h-11 outline-none"
+                      linesClassName="line-clamp-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400"
+                      tooltipClassName="w-[min(28rem,calc(100vw-1.5rem))]"
+                    />
 
-                    <div className="flex flex-wrap gap-2 mb-6">
-                      {project.tags.map((tag) => (
+                    <div className="mb-6 flex h-7 items-center gap-1.5">
+                      {project.tags.slice(0, 2).map((tag) => (
                         <span
                           key={tag}
-                          className="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-400 border border-pink-200 dark:border-pink-500/20"
+                          className="shrink-0 rounded-full border border-pink-200 bg-pink-100 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-pink-700 dark:border-pink-500/20 dark:bg-pink-900/30 dark:text-pink-400"
                         >
                           {tag}
                         </span>
                       ))}
+                      <OverflowItemsTooltip
+                        items={project.tags}
+                        className="relative shrink-0 outline-none"
+                        triggerClassName="rounded-full border border-black/10 bg-black/5 px-2 py-1 text-[9px] font-bold tracking-wider text-gray-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
+                        tooltipClassName="w-max max-w-52"
+                      />
                     </div>
 
-                    <div className="flex gap-4 mt-auto">
+                    <div className="flex gap-4">
                       <Link
                         href={project.repo}
                         target="_blank"

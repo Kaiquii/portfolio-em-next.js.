@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { ExternalLink, Quote, Star } from "lucide-react";
 import { FaLinkedin } from "react-icons/fa";
 import Modal from "./ui/Modal";
+import { TruncatedTextTooltip } from "./ui/Tooltip";
 
 const recommendations = [
   {
@@ -101,12 +102,15 @@ export default function Testimonials() {
                 </div>
 
                 <div className="mb-6 grow">
-                  <p
+                  <TruncatedTextTooltip
+                    content={rec.text}
                     id={textId}
-                    className="line-clamp-4 text-gray-600 dark:text-gray-300 italic leading-relaxed"
-                  >
-                    &quot;{rec.text}&quot;
-                  </p>
+                    className="relative outline-none"
+                    linesClassName="line-clamp-4 text-gray-600 dark:text-gray-300 italic leading-relaxed"
+                    renderText={(text) => <>&quot;{text}&quot;</>}
+                    renderTooltipContent={(text) => `“${text}”`}
+                    tooltipClassName="w-[min(32rem,calc(100vw-1.5rem))]"
+                  />
 
                   <button
                     type="button"

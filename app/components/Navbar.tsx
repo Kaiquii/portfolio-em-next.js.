@@ -38,7 +38,8 @@ export default function Navbar() {
 
   return (
     <header
-      className="fixed top-0 left-0 right-0 z-[9999] px-4 pt-4"
+      data-tooltip-boundary="top"
+      className="fixed top-0 left-0 right-0 z-9999 px-4 pt-4"
     >
       <div
         className={`max-w-7xl mx-auto h-15 px-4 sm:px-5 flex items-center justify-between rounded-lg border backdrop-blur-xl ${
@@ -49,7 +50,7 @@ export default function Navbar() {
       >
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-xl sm:text-2xl font-bold z-[10000] text-black dark:text-white hover:text-pink"
+          className="inline-flex items-center gap-2 text-xl sm:text-2xl font-bold z-10000 text-black dark:text-white hover:text-pink"
           aria-label="Ir para o início"
         >
           <span className="h-2.5 w-2.5 rounded-full bg-linear-to-br from-pink-500 to-blue-600 shadow-[0_0_10px_rgba(209,47,122,0.45)]" />
@@ -57,7 +58,7 @@ export default function Navbar() {
         </Link>
 
         <nav className="hidden lg:block" aria-label="Navegação principal">
-          <ul className="flex items-center gap-1 rounded-lg border border-black/5 bg-black/[0.03] p-1 dark:border-white/5 dark:bg-white/[0.04]">
+          <ul className="flex items-center gap-1 rounded-lg border border-black/5 bg-black/3 p-1 dark:border-white/5 dark:bg-white/4">
             {navLinks.map((item) => (
               <li key={item.name}>
                 <Link
@@ -71,7 +72,7 @@ export default function Navbar() {
           </ul>
         </nav>
 
-        <div className="flex items-center gap-4 z-[10000]">
+        <div className="flex items-center gap-4 z-10000">
           <ThemeToggle />
 
           <button
@@ -85,7 +86,7 @@ export default function Navbar() {
         </div>
 
         <div
-          className={`fixed left-4 right-4 top-22 rounded-lg border border-black/10 bg-white/95 p-4 shadow-xl shadow-black/10 backdrop-blur-xl dark:border-white/10 dark:bg-black/90 lg:hidden z-[9998] ${
+          className={`fixed left-4 right-4 top-22 rounded-lg border border-black/10 bg-white/95 p-4 shadow-xl shadow-black/10 backdrop-blur-xl dark:border-white/10 dark:bg-black/90 lg:hidden z-9998 ${
             isOpen
               ? "opacity-100 visible translate-y-0"
               : "opacity-0 invisible pointer-events-none -translate-y-2"
